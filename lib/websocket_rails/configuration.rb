@@ -82,6 +82,10 @@ module WebsocketRails
       @base_path = base_path
     end
 
+    def log_path
+      @log_path ||= "#{Rails.root}/log/websocket_rails.log"
+    end
+
     def log_path=(path)
       @log_path = path
     end
