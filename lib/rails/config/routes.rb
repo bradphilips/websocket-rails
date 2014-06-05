@@ -1,7 +1,9 @@
 Rails.application.routes.draw do
+  load "#{Rails.root}/config/initializers/websocket_rails.rb"
+
   if Rails.version >= '4.0.0'
-    match "/websocket", :to => WebsocketRails::ConnectionManager.new, via: [:get, :post]
+    match WebsocketRails.config.base_path, :to => WebsocketRails::ConnectionManager.new, via: [:get, :post]
   else
-    match "/websocket", :to => WebsocketRails::ConnectionManager.new
+    match WebsocketRails.config.base_path, :to => WebsocketRails::ConnectionManager.new
   end
 end
