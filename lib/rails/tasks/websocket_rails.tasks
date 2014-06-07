@@ -1,4 +1,4 @@
-namespace :websocket_rails do
+namespace WebsocketRails.config.base_namespace do
   desc 'Start the WebsocketRails standalone server.'
   task :start_server do
     require "thin"

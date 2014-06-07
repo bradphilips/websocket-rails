@@ -82,6 +82,14 @@ module WebsocketRails
       @base_path = base_path
     end
 
+    def base_namespace
+      @base_namespace ||= :websocket_rails
+    end
+
+    def base_namespace=(base_namespace)
+      @base_namespace = base_namespace
+    end
+
     def log_path
       @log_path ||= "#{Rails.root}/log/websocket_rails.log"
     end
