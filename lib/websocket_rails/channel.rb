@@ -73,7 +73,8 @@ module WebsocketRails
     end
 
     def send_token(connection)
-      Event.new :channel_token, :channel => @name, :data => {:token => token}, :connection => connection, :namespace => WebsocketRails.config.base_namespace
+      event = Event.new :channel_token, :channel => @name, :data => {:token => token}, :connection => connection, :namespace => WebsocketRails.config.base_namespace
+      event.trigger
     end
 
     def send_data(event)
