@@ -12,9 +12,13 @@ class WebSocketRails.HttpConnection extends WebSocketRails.AbstractConnection
     -> new ActiveXObject("Microsoft.XMLHTTP")
   ]
 
-  constructor: (url, @dispatcher) ->
+  constructor: (url, @dispatcher, @is_secure) ->
     super
-    @_url          = "http://#{url}"
+    if @is_secure
+      @_url        = "https://#{url}"
+    else
+      @_url        = "http://#{url}"
+
     @_conn         = @_createXMLHttpObject()
     @last_pos      = 0
     try

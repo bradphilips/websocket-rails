@@ -20,7 +20,7 @@ Stop listening for new events from the server
   dispatcher.unbind('event')
 ###
 class @WebSocketRails
-  constructor: (@url, @namespace = 'websocket_rails', @use_websockets = true) ->
+  constructor: (@url, @namespace = 'websocket_rails', @use_websockets = true, @is_secure = window.location.protocol == 'https:') ->
     @callbacks = {}
     @channels  = {}
     @queue     = {}
@@ -31,9 +31,9 @@ class @WebSocketRails
     @state = 'connecting'
 
     unless @supports_websockets() and @use_websockets
-      @_conn = new WebSocketRails.HttpConnection @url, @
+      @_conn = new WebSocketRails.HttpConnection @url, @, @is_secure
     else
-      @_conn = new WebSocketRails.WebSocketConnection @url, @
+      @_conn = new WebSocketRails.WebSocketConnection @url, @, @is_secure
 
     @_conn.new_message = @new_message
 
