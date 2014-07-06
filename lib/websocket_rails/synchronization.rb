@@ -60,7 +60,7 @@ module WebsocketRails
     def publish(event)
       Fiber.new do
         event.server_token = server_token
-        redis.publish "websocket_rails.events", event.serialize
+        redis.publish "#{WebsocketRails.config.base_namespace}.events", event.serialize
       end.resume
     end
 
@@ -75,7 +75,7 @@ module WebsocketRails
 
         synchro = Fiber.new do
           fiber_redis = Redis.connect(WebsocketRails.config.redis_options)
-          fiber_redis.subscribe "websocket_rails.events" do |on|
+          fiber_redis.subscribe "#{WebsocketRails.config.base_namespace}.events" do |on|
 
             on.message do |_, encoded_event|
               event = Event.new_from_json(encoded_event, nil)
@@ -129,20 +129,20 @@ module WebsocketRails
     def generate_server_token
       begin
         token = SecureRandom.urlsafe_base64
-      end while redis.sismember("websocket_rails.active_servers", token)
+      end while redis.sismember("#{WebsocketRails.config.base_namespace}.active_servers", token)
 
       token
     end
 
     def register_server(token)
       Fiber.new do
-        redis.sadd "websocket_rails.active_servers", token
+        redis.sadd "#{WebsocketRails.config.base_namespace}.active_servers", token
         info "Server Registered: #{token}"
       end.resume
     end
 
     def remove_server(token)
-      ruby_redis.srem "websocket_rails.active_servers", token
+      ruby_redis.srem "#{WebsocketRails.config.base_namespace}.active_servers", token
       info "Server Removed: #{token}"
       EM.stop
     end
@@ -151,26 +151,26 @@ module WebsocketRails
       Fiber.new do
         id = connection.user_identifier
         user = connection.user
-        redis.hset 'websocket_rails.users', id, user.as_json(root: false).to_json
+        redis.hset "#{WebsocketRails.config.base_namespace}.users", id, user.as_json(root: false).to_json
       end.resume
     end
 
     def destroy_user(identifier)
       Fiber.new do
-        redis.hdel 'websocket_rails.users', identifier
+        redis.hdel "#{WebsocketRails.config.base_namespace}.users", identifier
       end.resume
     end
 
     def find_user(identifier)
       Fiber.new do
-        raw_user = redis.hget('websocket_rails.users', identifier)
+        raw_user = redis.hget("#{WebsocketRails.config.base_namespace}.users", identifier)
         raw_user ? JSON.parse(raw_user) : nil
       end.resume
     end
 
     def all_users
       Fiber.new do
-        redis.hgetall('websocket_rails.users')
+        redis.hgetall("#{WebsocketRails.config.base_namespace}.users")
       end.resume
     end
 
